@@ -55,6 +55,7 @@
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
+  services.xserver.wacom.enable = true;
 
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
@@ -94,6 +95,8 @@
     wsjtx
     fldigi
     vlc
+    xf86_input_wacom
+    wacomtablet
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -110,6 +113,17 @@
   services.openssh.enable = true;
 
   hardware.bluetooth.enable = true;
+  # hardware.enableAllFirmware = true;
+  hardware.enableRedistributableFirmware = true;
+
+  services.udev = {
+
+    packages = [ pkgs.rtl-sdr pkgs.libusb ]; # (there might be other packages that require udev here too)
+    path = [ pkgs.coreutils ];
+    extraRules = ''
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="8281", ATTR{authorized}="0"
+    '';
+   };
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 22 ];
