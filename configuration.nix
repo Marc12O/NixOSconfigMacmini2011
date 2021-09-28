@@ -18,7 +18,6 @@
     intel-media-driver
   ];
 
-
   nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.
@@ -41,6 +40,8 @@
   # replicates the default behaviour.
   networking.useDHCP = false;
   networking.interfaces.enp2s0f0.useDHCP = true;
+
+  networking.enableIPv6 = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -77,9 +78,10 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  environment.shells = with pkgs; [ bashInteractive zsh ];
   users.users.user = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "audio" "dialout" ]; # Enable ‘sudo’ for the user.
   };
 
   # List packages installed in system profile. To search, run:
@@ -89,6 +91,8 @@
     wget
     mc
     firefox
+    chromium
+    brave
     tdesktop
     signal-desktop
     element-desktop
@@ -96,7 +100,19 @@
     fldigi
     vlc
     xf86_input_wacom
-    wacomtablet
+    # wacomtablet
+    okular
+    qpaeq
+    pulseeffects-pw
+    lynis
+    ossec
+    chkrootkit
+    protonvpn-cli
+    ktorrent
+    filezilla
+    fetchmail
+    lynx
+    php80
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -116,6 +132,8 @@
   # hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
 
+  hardware.pulseaudio.package = pkgs.pulseaudioFull;
+
   services.udev = {
 
     packages = [ pkgs.rtl-sdr pkgs.libusb ]; # (there might be other packages that require udev here too)
@@ -130,6 +148,9 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  # Haveged daemon (random generator)
+  services.haveged.enable = true;
 
   powerManagement.enable = true;
   powerManagement.cpuFreqGovernor = "schedutil";
@@ -146,7 +167,8 @@
   system.stateVersion = "21.05"; # Did you read the comment?
 
   system.autoUpgrade.enable = true;
-  system.autoUpgrade.allowReboot = false;
+  system.autoUpgrade.dates = "00:05" ;
+  system.autoUpgrade.allowReboot = true;
 
   services.fstrim.enable = true;
   boot.kernel.sysctl = { "vm.swappiness" = 1; };
