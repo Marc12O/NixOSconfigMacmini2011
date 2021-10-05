@@ -8,26 +8,16 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./marcintel.nix
     ];
-
-  hardware.cpu.intel.updateMicrocode = true;
-  hardware.opengl.extraPackages = with pkgs; [
-    vaapiIntel
-    vaapiVdpau
-    libvdpau-va-gl
-    intel-media-driver
-  ];
-
-  nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 1;
 
   boot.initrd.kernelModules = [ "i915" ];
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "nixosMM"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   networking.networkmanager.enable = true;
@@ -41,7 +31,7 @@
   networking.useDHCP = false;
   networking.interfaces.enp2s0f0.useDHCP = true;
 
-  networking.enableIPv6 = true;
+  #networking.enableIPv6 = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -56,7 +46,6 @@
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  services.xserver.wacom.enable = true;
 
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
@@ -65,7 +54,6 @@
   # Configure keymap in X11
   services.xserver.layout = "us";
   services.xserver.xkbOptions = "eurosign:e";
-  services.xserver.xkbVariant = "intl";
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -84,6 +72,8 @@
     extraGroups = [ "wheel" "audio" "dialout" ]; # Enable ‘sudo’ for the user.
   };
 
+  nix.allowedUsers = [ "@wheel" ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -92,7 +82,6 @@
     mc
     firefox
     chromium
-    brave
     tdesktop
     signal-desktop
     element-desktop
@@ -102,17 +91,10 @@
     xf86_input_wacom
     # wacomtablet
     okular
-    qpaeq
-    pulseeffects-pw
-    lynis
-    ossec
-    chkrootkit
     protonvpn-cli
     ktorrent
     filezilla
-    fetchmail
-    lynx
-    php80
+    jupyter
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -127,12 +109,6 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  hardware.bluetooth.enable = true;
-  # hardware.enableAllFirmware = true;
-  hardware.enableRedistributableFirmware = true;
-
-  hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
   services.udev = {
 
@@ -149,15 +125,6 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # Haveged daemon (random generator)
-  services.haveged.enable = true;
-
-  powerManagement.enable = true;
-  powerManagement.cpuFreqGovernor = "schedutil";
-
-  nix.gc.automatic = true;
-  nix.optimise.automatic = true;
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
@@ -166,11 +133,5 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "21.05"; # Did you read the comment?
 
-  system.autoUpgrade.enable = true;
-  system.autoUpgrade.dates = "00:05" ;
-  system.autoUpgrade.allowReboot = true;
-
-  services.fstrim.enable = true;
-  boot.kernel.sysctl = { "vm.swappiness" = 1; };
 }
 
